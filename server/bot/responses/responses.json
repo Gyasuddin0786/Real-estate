@@ -1,0 +1,119 @@
+{
+  "greeting": {
+    "messages": [
+      "Hello! Welcome to our Real Estate platform! 🏠",
+      "Hi there! I'm here to help you find your dream property!",
+      "Welcome! How can I assist you with your property needs today?"
+    ],
+    "quickReplies": [
+      "Show me properties",
+      "I want to buy",
+      "I want to rent",
+      "Contact agent"
+    ]
+  },
+  "property_search": {
+    "messages": [
+      "I'd love to help you find the perfect property! What type are you looking for?",
+      "Great! Let's find you an amazing property. What are your preferences?",
+      "Excellent choice! I can show you our best properties. What's your budget?"
+    ],
+    "quickReplies": [
+      "Apartments",
+      "Houses",
+      "Commercial",
+      "Any type"
+    ]
+  },
+  "price_inquiry": {
+    "messages": [
+      "Our properties are competitively priced! What's your budget range?",
+      "We have options for every budget. Let me know your price range!",
+      "Great question! Our prices start from ₹25 Lakh. What's your budget?"
+    ],
+    "quickReplies": [
+      "Under ₹50L",
+      "₹50L - ₹1Cr",
+      "₹1Cr - ₹2Cr",
+      "Above ₹2Cr"
+    ]
+  },
+  "location": {
+    "messages": [
+      "Location is key! We have properties in prime areas. Which location interests you?",
+      "We cover all major locations in the city. Where would you like to live?",
+      "Perfect! Location matters a lot. Which area are you considering?"
+    ],
+    "quickReplies": [
+      "City Center",
+      "Suburbs",
+      "Near Metro",
+      "IT Hub area"
+    ]
+  },
+  "contact": {
+    "messages": [
+      "I'll connect you with our expert agents right away! 📞",
+      "Our agents are ready to help! How would you like to be contacted?",
+      "Great! Let me get you in touch with our property experts!"
+    ],
+    "quickReplies": [
+      "Call me now",
+      "WhatsApp me",
+      "Send email",
+      "Schedule meeting"
+    ]
+  },
+  "booking": {
+    "messages": [
+      "Excellent! I can help you schedule a property visit. When works for you?",
+      "Perfect! Let's book a site visit. What's your preferred time?",
+      "Great choice! Our agents can show you properties. When are you free?"
+    ],
+    "quickReplies": [
+      "Today",
+      "Tomorrow",
+      "This weekend",
+      "Next week"
+    ]
+  },
+  "help": {
+    "messages": [
+      "I'm here to help! I can assist you with property search, pricing, bookings, and more!",
+      "Sure! I can help you find properties, connect with agents, or answer any questions!",
+      "Happy to help! Ask me about properties, prices, locations, or booking visits!"
+    ],
+    "quickReplies": [
+      "Find properties",
+      "Check prices",
+      "Book visit",
+      "Contact agent"
+    ]
+  },
+  "goodbye": {
+    "messages": [
+      "Thank you for visiting! Feel free to reach out anytime! 🏠",
+      "Goodbye! Hope to help you find your dream property soon!",
+      "Thanks for chatting! Our agents are always here to help!"
+    ],
+    "quickReplies": [
+      "Find more properties",
+      "Contact agent",
+      "Book a visit",
+      "Get updates"
+    ]
+  },
+  "unknown": {
+    "messages": [
+      "I'm not sure I understand. Could you please rephrase that?",
+      "Sorry, I didn't get that. Can you ask me about properties, prices, or bookings?",
+      "I'm here to help with real estate queries. What would you like to know?"
+    ],
+    "quickReplies": [
+      "Show properties",
+      "Check prices",
+      "Contact agent",
+      "Help"
+    ]
+  }
+}
