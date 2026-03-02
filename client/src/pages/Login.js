@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Paper,
@@ -8,18 +8,18 @@ import {
   Box,
   Alert,
   Link as MuiLink,
-  Divider
-} from '@mui/material';
-import { Google, GitHub } from '@mui/icons-material';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+  Divider,
+} from "@mui/material";
+import { Google, GitHub } from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: ''
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasRedirected, setHasRedirected] = useState(false);
   const { login, user } = useAuth();
@@ -29,10 +29,10 @@ const Login = () => {
     if (user && !hasRedirected) {
       setHasRedirected(true);
       const userRole = user.role;
-      if (userRole === 'owner' || userRole === 'admin') {
-        navigate('/dashboard', { replace: true });
+      if (userRole === "owner" || userRole === "admin") {
+        navigate("/dashboard", { replace: true });
       } else {
-        navigate('/', { replace: true });
+        navigate("/", { replace: true });
       }
     }
   }, [user, navigate, hasRedirected]);
@@ -40,50 +40,65 @@ const Login = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       const response = await login(formData.email, formData.password);
       const userRole = response?.user?.role;
-      
-      if (userRole === 'owner' || userRole === 'admin') {
-        navigate('/dashboard');
+
+      if (userRole === "owner" || userRole === "admin") {
+        navigate("/dashboard");
       } else {
-        navigate('/');
+        navigate("/");
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'Login failed');
+      setError(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = "http://localhost:5000/api/auth/google";
   };
 
   const handleGitHubLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/github';
+    window.location.href = "http://localhost:5000/api/auth/github";
   };
 
   return (
     <Container maxWidth="sm" sx={{ py: 8 }}>
       <Paper sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom textAlign="center" fontWeight="bold">
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          textAlign="center"
+          fontWeight="bold"
+        >
           Welcome Back
         </Typography>
-        <Typography variant="body1" textAlign="center" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography
+          variant="body1"
+          textAlign="center"
+          color="text.secondary"
+          sx={{ mb: 3 }}
+        >
           Sign in to your account
         </Typography>
 
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
 
         <Box sx={{ mb: 3 }}>
           <Button
@@ -92,17 +107,17 @@ const Login = () => {
             startIcon={<Google />}
             onClick={handleGoogleLogin}
             disabled={loading}
-            sx={{ 
-              mb: 1, 
+            sx={{
+              mb: 1,
               py: 1.5,
-              bgcolor: '#4285f4',
-              color: 'white',
-              '&:hover': {
-                bgcolor: '#3367d6'
+              bgcolor: "#4285f4",
+              color: "white",
+              "&:hover": {
+                bgcolor: "#3367d6",
               },
-              '&:disabled': {
-                bgcolor: '#cccccc'
-              }
+              "&:disabled": {
+                bgcolor: "#cccccc",
+              },
             }}
           >
             Sign in with Google
@@ -113,16 +128,16 @@ const Login = () => {
             startIcon={<GitHub />}
             onClick={handleGitHubLogin}
             disabled={loading}
-            sx={{ 
+            sx={{
               py: 1.5,
-              bgcolor: '#333333',
-              color: 'white',
-              '&:hover': {
-                bgcolor: '#24292e'
+              bgcolor: "#333333",
+              color: "white",
+              "&:hover": {
+                bgcolor: "#24292e",
               },
-              '&:disabled': {
-                bgcolor: '#cccccc'
-              }
+              "&:disabled": {
+                bgcolor: "#cccccc",
+              },
             }}
           >
             Sign in with GitHub
@@ -146,7 +161,7 @@ const Login = () => {
             required
             sx={{ mb: 2 }}
           />
-          
+
           <TextField
             fullWidth
             label="Password"
@@ -157,20 +172,24 @@ const Login = () => {
             required
             sx={{ mb: 3 }}
           />
-
+          <Typography textAlign="end" sx={{ mt: 1, mb: 1 }}>
+            <MuiLink component={Link} to="/forgot-password" color="primary">
+              Forgot Password?
+            </MuiLink>
+          </Typography>
           <Button
             type="submit"
             fullWidth
             variant="contained"
             size="large"
             disabled={loading}
-            sx={{ mb: 2, bgcolor: '#2563eb' }}
+            sx={{ mb: 2, bgcolor: "#2563eb" }}
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? "Signing In..." : "Sign In"}
           </Button>
 
           <Typography textAlign="center">
-            Don't have an account?{' '}
+            Don't have an account?{" "}
             <MuiLink component={Link} to="/register" color="primary">
               Sign up here
             </MuiLink>

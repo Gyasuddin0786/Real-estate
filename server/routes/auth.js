@@ -196,6 +196,82 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Forgot Password - Send Reset Code
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+    
+    // Generate 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Save code and expiry (10 minutes)
+    user.resetPasswordToken = resetCode;
+    user.resetPasswordExpires = Date.now() + 10 * 60 * 1000;
+    await user.save();
+    
+    // Send email
+    const { sendPasswordResetEmail } = require('../utils/emailService');
+    await sendPasswordResetEmail(user.email, user.name, resetCode);
+    
+    res.json({ message: 'Password reset code sent to your email' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Verify Reset Code
+router.post('/verify-reset-code', async (req, res) => {
+  try {
+    const { email, code } = req.body;
+    
+    const user = await User.findOne({ 
+      email,
+      resetPasswordToken: code,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+    
+    res.json({ message: 'Code verified successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Reset Password
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    
+    const user = await User.findOne({ 
+      email,
+      resetPasswordToken: code,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid or expired code' });
+    }
+    
+    // Update password
+    user.password = newPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    
+    res.json({ message: 'Password reset successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Debug route
 router.get('/debug', (req, res) => {
   res.json({

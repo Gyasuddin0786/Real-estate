@@ -190,7 +190,76 @@ const sendBookingConfirmationEmail = async (userEmail, userName, bookingDetails)
   }
 };
 
+const sendPasswordResetEmail = async (userEmail, userName, resetCode) => {
+  try {
+    const mailOptions = {
+      from: `"Real Estate Platform" <${process.env.EMAIL_USER}>`,
+      to: userEmail,
+      subject: '🔐 Password Reset Code - Real Estate Platform',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+            .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 40px 20px; text-align: center; }
+            .header h1 { color: white; margin: 0; font-size: 28px; }
+            .lock-icon { font-size: 60px; margin-bottom: 10px; }
+            .content { padding: 40px 30px; }
+            .code-box { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; margin: 30px 0; font-size: 48px; font-weight: bold; letter-spacing: 10px; }
+            .warning-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 5px; }
+            .footer { background: #333; color: white; text-align: center; padding: 20px; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <div class="lock-icon">🔐</div>
+              <h1>Password Reset Request</h1>
+            </div>
+            <div class="content">
+              <p style="font-size: 18px; color: #333;">Hi <strong>${userName}</strong>,</p>
+              <p style="font-size: 16px; color: #555;">We received a request to reset your password. Use the code below to reset your password:</p>
+              
+              <div class="code-box">
+                ${resetCode}
+              </div>
+
+              <div class="warning-box">
+                <strong>⚠️ Important:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>This code is valid for 10 minutes only</li>
+                  <li>Don't share this code with anyone</li>
+                  <li>If you didn't request this, please ignore this email</li>
+                </ul>
+              </div>
+
+              <p style="color: #666; font-size: 14px; margin-top: 30px;">
+                If you didn't request a password reset, your account is still secure. You can safely ignore this email.
+              </p>
+            </div>
+            <div class="footer">
+              <p>© 2026 Real Estate Platform. All rights reserved.</p>
+              <p>Security is our priority 🔒</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log('Password reset email sent to:', userEmail);
+    return { success: true };
+  } catch (error) {
+    console.error('Error sending password reset email:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   sendWelcomeEmail,
-  sendBookingConfirmationEmail
+  sendBookingConfirmationEmail,
+  sendPasswordResetEmail
 };
