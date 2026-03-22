@@ -78,45 +78,50 @@ router.put('/change-password', auth, async (req, res) => {
   }
 });
 
-// Admin: Get all users
+// Admin/Owner: Get all users
 router.get('/all', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    if (req.user.role !== 'admin' && req.user.role !== 'owner') {
+      return res.status(403).json({ message: 'Access denied.' });
     }
     
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    let users;
+    if (req.user.role === 'owner') {
+      // Owner can only see regular users (not admins, not other owners)
+      users = await User.find({ role: 'user' }).select('-password').sort({ createdAt: -1 });
+    } else {
+      users = await User.find().select('-password').sort({ createdAt: -1 });
+    }
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Admin: Update user status
+// Admin/Owner: Update user status (owner can only block/unblock regular users)
 router.put('/:id/status', auth, async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ message: 'Access denied. Admin only.' });
+    if (req.user.role !== 'admin' && req.user.role !== 'owner') {
+      return res.status(403).json({ message: 'Access denied.' });
+    }
+    
+    const targetUser = await User.findById(req.params.id);
+    if (!targetUser) return res.status(404).json({ message: 'User not found' });
+    
+    // Owner can only block/unblock regular users
+    if (req.user.role === 'owner' && targetUser.role !== 'user') {
+      return res.status(403).json({ message: 'Owners can only manage regular users.' });
     }
     
     const { isActive } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { isActive },
-      { new: true }
-    ).select('-password');
-    
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
+    const user = await User.findByIdAndUpdate(req.params.id, { isActive }, { new: true }).select('-password');
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Admin: Update user role
+// Admin only: Update user role
 router.put('/:id/role', auth, async (req, res) => {
   try {
     if (req.user.role !== 'admin') {
@@ -124,16 +129,9 @@ router.put('/:id/role', auth, async (req, res) => {
     }
     
     const { role } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { role },
-      { new: true }
-    ).select('-password');
+    const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select('-password');
     
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });

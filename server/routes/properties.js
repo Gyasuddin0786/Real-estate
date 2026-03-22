@@ -206,22 +206,16 @@ router.put('/:id', auth, upload.array('images', 10), async (req, res) => {
       };
     }
     
-    // Handle images from file uploads
-    let images = property.images || [];
+    // Handle images: start fresh from what frontend sends (existingImages + new imageUrls)
+    let images = [];
+    if (req.body.imageUrls) {
+      images = JSON.parse(req.body.imageUrls); // already contains kept existing images
+    }
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => `/uploads/${file.filename}`);
       images = [...images, ...newImages];
     }
-    
-    // Handle image URLs
-    if (req.body.imageUrls) {
-      const imageUrls = JSON.parse(req.body.imageUrls);
-      images = [...images, ...imageUrls];
-    }
-    
-    if (images.length > 0) {
-      propertyData.images = images;
-    }
+    propertyData.images = images;
 
     const updatedProperty = await Property.findByIdAndUpdate(
       req.params.id,

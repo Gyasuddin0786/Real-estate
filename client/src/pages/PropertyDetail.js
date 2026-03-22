@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { propertyAPI, bookingAPI } from '../utils/api';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix leaflet default marker icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
 
 const PropertyDetail = () => {
   const { id } = useParams();
@@ -259,7 +270,7 @@ const PropertyDetail = () => {
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Property Image Slider */}
-            <div className="mb-6 relative">
+            <div className="mb-0 relative">
               <div className="relative h-96 rounded-lg overflow-hidden shadow-lg">
                 <img
                   src={
@@ -333,128 +344,184 @@ const PropertyDetail = () => {
               )}
             </div>
             
-            {/* Property Title */}
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">{property.title}</h1>
-            
-            {/* Location */}
-            <div className="flex items-center text-gray-600 mb-6">
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-              </svg>
-              <span className="text-lg">{property.location.address}, {property.location.city}, {property.location.state}</span>
-            </div>
+            {/* Property Info Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mt-4 mb-6">
+              {/* Title + Price Row */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+                <h1 className="text-2xl font-bold text-gray-900">{property.title}</h1>
+                <div className="text-2xl font-bold text-blue-600 whitespace-nowrap">₹{property.price.toLocaleString()}<span className="text-sm font-normal text-gray-500">/mo</span></div>
+              </div>
 
-            {/* Property Details */}
-            <div className="flex flex-wrap gap-6 mb-6">
-              <div className="flex items-center text-gray-700">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+              {/* Location */}
+              <div className="flex items-center text-gray-500 mb-4">
+                <svg className="w-4 h-4 mr-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                 </svg>
-                <span>{property.bedrooms} Bedrooms</span>
+                <span className="text-sm">{property.location.address}, {property.location.city}, {property.location.state}</span>
               </div>
-              <div className="flex items-center text-gray-700">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-                <span>{property.bathrooms} Bathrooms</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clipRule="evenodd" />
-                </svg>
-                <span>{property.area} sq ft</span>
-              </div>
-            </div>
 
-            {/* Rating */}
-            {property.rating && (
-              <div className="flex items-center mb-6">
-                <div className="flex items-center mr-3">
-                  {renderStars(Math.round(property.rating))}
+              {/* Stats Row */}
+              <div className="flex flex-wrap gap-4 py-4 border-t border-b border-gray-100 mb-4">
+                <div className="flex items-center gap-2 text-gray-700">
+                  <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">Bedrooms</div>
+                    <div className="font-semibold">{property.bedrooms}</div>
+                  </div>
                 </div>
-                <span className="text-lg font-semibold text-gray-700">
-                  {property.rating.toFixed(1)} ({property.reviews?.length || 0} reviews)
-                </span>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm3 5a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">Bathrooms</div>
+                    <div className="font-semibold">{property.bathrooms}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 01-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15.586 13H14a1 1 0 01-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">Area</div>
+                    <div className="font-semibold">{property.area} <span className="text-xs font-normal">sq ft</span></div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-gray-700">
+                  <div className="w-9 h-9 bg-yellow-50 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-yellow-500 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400">Rating</div>
+                    <div className="font-semibold">{property.rating?.toFixed(1) || 'N/A'}</div>
+                  </div>
+                </div>
               </div>
-            )}
 
-            {/* Description */}
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">Description</h2>
-              <p className="text-gray-700 leading-relaxed">{property.description}</p>
-            </div>
+              {/* Description */}
+              <div className="mb-5">
+                <h2 className="text-base font-semibold text-gray-900 mb-2">About this property</h2>
+                <p className="text-gray-600 leading-relaxed text-sm">{property.description}</p>
+              </div>
 
-            {/* Amenities */}
-            <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">Amenities</h2>
-              <div className="flex flex-wrap gap-2">
-                {property.amenities?.map((amenity, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800 border border-blue-200"
-                  >
-                    {amenity}
-                  </span>
-                ))}
+              {/* Amenities */}
+              <div>
+                <h2 className="text-base font-semibold text-gray-900 mb-2">Amenities</h2>
+                <div className="flex flex-wrap gap-2">
+                  {property.amenities?.map((amenity, index) => (
+                    <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-xs bg-blue-50 text-blue-700 border border-blue-100 font-medium">
+                      {amenity}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Booking Sidebar */}
+          {/* Right Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-6 sticky top-8">
-              <div className="text-3xl font-bold text-blue-600 mb-4">
-                ₹{property.price.toLocaleString()}/month
-              </div>
-              
-              <div className="mb-6">
-                <p className="text-gray-600 text-sm mb-2">
-                  Property Type: <span className="capitalize font-medium">{property.propertyType}</span>
-                </p>
-                <div className="flex items-center">
-                  <div className="flex mr-2">
-                    {renderStars(Math.floor(property.rating || 4.5))}
-                  </div>
-                  <span className="text-sm text-gray-600">
-                    ({property.reviews?.length || 0} reviews)
-                  </span>
+            <div className="sticky top-8 space-y-4">
+              {/* Booking Card */}
+              <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-2xl font-bold text-blue-600">₹{property.price.toLocaleString()}<span className="text-sm font-normal text-gray-500">/month</span></div>
+                  <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1 rounded-full capitalize font-medium">{property.propertyType}</span>
                 </div>
-              </div>
+                <div className="flex items-center gap-1 mb-4">
+                  {renderStars(Math.floor(property.rating || 4.5))}
+                  <span className="text-xs text-gray-500 ml-1">({property.reviews?.length || 0} reviews)</span>
+                </div>
 
-              {user ? (
-                user._id !== property.owner._id ? (
-                  <button
-                    onClick={() => setBookingDialog(true)}
-                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mb-3"
-                  >
-                    Book Now
-                  </button>
+                {user ? (
+                  user._id !== property.owner._id ? (
+                    <button onClick={() => setBookingDialog(true)} className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mb-3">
+                       Book Now
+                    </button>
+                  ) : (
+                    <button disabled className="w-full bg-gray-100 text-gray-400 py-3 rounded-lg font-semibold cursor-not-allowed mb-3">
+                      Your Property
+                    </button>
+                  )
                 ) : (
-                  <button
-                    disabled
-                    className="w-full bg-gray-300 text-gray-500 py-3 px-4 rounded-lg font-semibold cursor-not-allowed mb-3"
-                  >
-                    Your Property
+                  <button onClick={() => window.location.href = '/login'} className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mb-3">
+                    Login to Book
                   </button>
-                )
-              ) : (
-                <button
-                  onClick={() => window.location.href = '/login'}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 mb-3"
-                >
-                  Login to Book
-                </button>
-              )}
+                )}
 
-              <div className="border-t pt-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Owner</h3>
-                <div className="space-y-2 text-sm">
-                  <p><span className="font-medium">Name:</span> {property.owner.name}</p>
-                  <p><span className="font-medium">Email:</span> {property.owner.email}</p>
+                <div className="border-t pt-4">
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">Contact Owner</h3>
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0">
+                      {property.owner.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm">{property.owner.name}</p>
+                      <p className="text-xs text-gray-500">{property.owner.email}</p>
+                    </div>
+                  </div>
                   {property.owner.phone && (
-                    <p><span className="font-medium">Phone:</span> {property.owner.phone}</p>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                      </svg>
+                      {property.owner.phone}
+                    </div>
                   )}
                 </div>
+              </div>
+
+              {/* Location Card */}
+              <div className="bg-white rounded-xl shadow-md border border-gray-100 p-5">
+                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-1">
+                  <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  Location
+                </h3>
+                <p className="text-xs text-gray-500 mb-3">{property.location.address}, {property.location.city}, {property.location.state}</p>
+                {property.location?.coordinates?.lat && property.location?.coordinates?.lng ? (
+                  <div className="rounded-lg overflow-hidden border border-gray-200" style={{ height: '220px' }}>
+                    <MapContainer
+                      center={[property.location.coordinates.lat, property.location.coordinates.lng]}
+                      zoom={15}
+                      style={{ height: '100%', width: '100%' }}
+                      scrollWheelZoom={false}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[property.location.coordinates.lat, property.location.coordinates.lng]}>
+                        <Popup>
+                          <div className="text-xs">
+                            <strong>{property.title}</strong><br />
+                            {property.location.address}, {property.location.city}
+                          </div>
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border-2 border-dashed border-gray-200 bg-gray-50 flex items-center justify-center" style={{ height: '120px' }}>
+                    <div className="text-center text-gray-400">
+                      <svg className="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <p className="text-xs">Map not available</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

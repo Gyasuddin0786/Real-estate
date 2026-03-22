@@ -51,7 +51,8 @@ const ChatBotSimple = () => {
   const fetchProperties = async () => {
     try {
       setIsLoadingProperties(true);
-      const response = await fetch('/api/properties');
+      const response = await fetch('http://localhost:5000/api/properties');
+      if (!response.ok) throw new Error('API error');
       const data = await response.json();
       setAllProperties(data.properties || []);
     } catch (error) {

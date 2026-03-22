@@ -86,6 +86,9 @@ const Navbar = () => {
                 <ListItem component={Link} to="/manage-properties" onClick={handleMobileNavClick} sx={{ cursor: 'pointer' }}>
                   <ListItemText primary="Manage Properties" />
                 </ListItem>
+                <ListItem component={Link} to="/owner-manage-users" onClick={handleMobileNavClick} sx={{ cursor: 'pointer' }}>
+                  <ListItemText primary="Manage Users" />
+                </ListItem>
               </>
             ) : (
               <ListItem component={Link} to="/manage-bookings" onClick={handleMobileNavClick} sx={{ cursor: 'pointer' }}>
@@ -167,6 +170,9 @@ const Navbar = () => {
                     </Button>
                     <Button component={Link} to="/manage-properties" sx={{ color: '#333' }}>
                       Manage Properties
+                    </Button>
+                    <Button component={Link} to="/owner-manage-users" sx={{ color: '#333' }}>
+                      Manage Users
                     </Button>
                   </>
                 ) : (

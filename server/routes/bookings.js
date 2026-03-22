@@ -46,6 +46,7 @@ router.post('/', auth, async (req, res) => {
       paidAmount: finalPaidAmount,
       remainingAmount: finalRemainingAmount,
       paymentStatus: finalPaymentStatus,
+      status: 'confirmed',
       message: message || ''
     };
     

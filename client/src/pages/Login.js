@@ -95,8 +95,26 @@ const Login = () => {
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
+          <Alert 
+            severity="error" 
+            sx={{ 
+              mb: 2,
+              ...(error.toLowerCase().includes('blocked') && {
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                '& .MuiAlert-icon': { color: '#dc2626' }
+              })
+            }}
+          >
+            {error.toLowerCase().includes('blocked') ? (
+              <div>
+                <strong>🚫 Account Blocked</strong>
+                <p style={{ margin: '4px 0 0', fontSize: '13px' }}>
+                  Your account has been blocked by the platform owner. Contact support at{' '}
+                  <strong>support@realestate.com</strong>
+                </p>
+              </div>
+            ) : error}
           </Alert>
         )}
 

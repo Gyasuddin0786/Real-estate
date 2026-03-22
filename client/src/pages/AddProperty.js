@@ -1,6 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { propertyAPI } from '../utils/api';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+  iconUrl: require('leaflet/dist/images/marker-icon.png'),
+  shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+});
+
+// Click handler component for map
+const MapClickHandler = ({ onLocationSelect }) => {
+  useMapEvents({
+    click(e) {
+      onLocationSelect(e.latlng.lat, e.latlng.lng);
+    }
+  });
+  return null;
+};
 
 const AddProperty = () => {
   const navigate = useNavigate();
@@ -24,12 +44,43 @@ const AddProperty = () => {
   const [imageUrlInput, setImageUrlInput] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [coordinates, setCoordinates] = useState(null);
+  const [geocoding, setGeocoding] = useState(false);
+  const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // India center
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  // Geocode address to get lat/lng using OpenStreetMap Nominatim (free)
+  const geocodeAddress = useCallback(async () => {
+    const fullAddress = `${formData.address}, ${formData.city}, ${formData.state}, India`;
+    if (!formData.city) return;
+    setGeocoding(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(fullAddress)}&limit=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      const data = await res.json();
+      if (data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lng = parseFloat(data[0].lon);
+        setCoordinates({ lat, lng });
+        setMapCenter([lat, lng]);
+      }
+    } catch (err) {
+      console.error('Geocoding failed:', err);
+    } finally {
+      setGeocoding(false);
+    }
+  }, [formData.address, formData.city, formData.state]);
+
+  const handleMapClick = (lat, lng) => {
+    setCoordinates({ lat, lng });
   };
 
   const handleImageChange = (e) => {
@@ -86,6 +137,10 @@ const AddProperty = () => {
       propertyFormData.append('location[city]', formData.city);
       propertyFormData.append('location[state]', formData.state);
       propertyFormData.append('location[zipCode]', formData.zipCode);
+      if (coordinates) {
+        propertyFormData.append('location[coordinates][lat]', coordinates.lat);
+        propertyFormData.append('location[coordinates][lng]', coordinates.lng);
+      }
 
       // Add images
       images.forEach(image => {
@@ -287,6 +342,56 @@ const AddProperty = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+            </div>
+
+            {/* Map Location Picker */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  📍 Pin Location on Map
+                </label>
+                <button
+                  type="button"
+                  onClick={geocodeAddress}
+                  disabled={geocoding || !formData.city}
+                  className="text-sm bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1"
+                >
+                  {geocoding ? (
+                    <><span className="animate-spin">⟳</span> Locating...</>
+                  ) : (
+                    <>🔍 Find on Map</>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mb-3">
+                Click "Find on Map" to auto-locate, or click directly on the map to pin exact location.
+              </p>
+              <div className="rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm" style={{ height: '350px' }}>
+                <MapContainer
+                  center={mapCenter}
+                  zoom={coordinates ? 15 : 5}
+                  style={{ height: '100%', width: '100%' }}
+                  key={mapCenter.join(',')}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <MapClickHandler onLocationSelect={handleMapClick} />
+                  {coordinates && (
+                    <Marker position={[coordinates.lat, coordinates.lng]} />
+                  )}
+                </MapContainer>
+              </div>
+              {coordinates ? (
+                <div className="mt-2 flex items-center gap-2 text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                  <span>✅</span>
+                  <span>Location pinned: {coordinates.lat.toFixed(5)}, {coordinates.lng.toFixed(5)}</span>
+                  <button type="button" onClick={() => setCoordinates(null)} className="ml-auto text-red-500 hover:text-red-700">✕ Remove</button>
+                </div>
+              ) : (
+                <p className="mt-2 text-xs text-gray-400">⚠️ No location pinned yet. Map will not show on property detail.</p>
+              )}
             </div>
 
             {/* Amenities */}
