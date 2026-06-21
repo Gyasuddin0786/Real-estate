@@ -76,7 +76,7 @@ const Home = () => {
   const fetchFeaturedProperties = async () => {
     try {
       const response = await propertyAPI.getFeatured();
-      setFeaturedProperties(response.data);
+      setFeaturedProperties(response.data.properties || []);
     } catch (error) {
       try {
         const fallbackResponse = await propertyAPI.getAll({ limit: 8 });
@@ -86,7 +86,8 @@ const Home = () => {
       }
     }
   };
-
+console.log(response.data);
+console.log('Featured properties:', featuredProperties);
   const fetchStats = async () => {
     try {
       const response = await statsAPI.getStats();
