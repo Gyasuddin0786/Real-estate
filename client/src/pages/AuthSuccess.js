@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 const AuthSuccess = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { updateUser } = useAuth();
   const [processed, setProcessed] = useState(false);

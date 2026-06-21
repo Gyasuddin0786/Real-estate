@@ -19,30 +19,30 @@ const ChatBotSimple = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
 
-  // Website Pages & Features (Based on actual website structure)
-  const websiteFeatures = {
-    pages: {
-      home: 'Homepage with featured properties and search',
-      properties: 'Browse all properties with filters',
-      propertyDetail: 'Detailed property information and booking',
-      dashboard: 'User/Owner dashboard with analytics',
-      profile: 'Manage your profile and preferences',
-      login: 'User authentication',
-      register: 'Create new account',
-      addProperty: 'List new property (Owner only)',
-      manageProperties: 'Edit/manage listings (Owner only)',
-      editProperty: 'Update property details (Owner only)'
-    },
-    features: {
-      search: 'Search properties by city, area, type',
-      filters: 'Filter by price, bedrooms, amenities',
-      booking: 'Schedule property visits',
-      messaging: 'Chat with owners/tenants',
-      analytics: 'Property performance stats',
-      favorites: 'Save properties to wishlist',
-      reviews: 'Rate and review properties'
-    }
-  };
+  // // Website Pages & Features (Based on actual website structure)
+  // const websiteFeatures = {
+  //   pages: {
+  //     home: 'Homepage with featured properties and search',
+  //     properties: 'Browse all properties with filters',
+  //     propertyDetail: 'Detailed property information and booking',
+  //     dashboard: 'User/Owner dashboard with analytics',
+  //     profile: 'Manage your profile and preferences',
+  //     login: 'User authentication',
+  //     register: 'Create new account',
+  //     addProperty: 'List new property (Owner only)',
+  //     manageProperties: 'Edit/manage listings (Owner only)',
+  //     editProperty: 'Update property details (Owner only)'
+  //   },
+  //   features: {
+  //     search: 'Search properties by city, area, type',
+  //     filters: 'Filter by price, bedrooms, amenities',
+  //     booking: 'Schedule property visits',
+  //     messaging: 'Chat with owners/tenants',
+  //     analytics: 'Property performance stats',
+  //     favorites: 'Save properties to wishlist',
+  //     reviews: 'Rate and review properties'
+  //   }
+  // };
 
   const [allProperties, setAllProperties] = useState([]);
   const [isLoadingProperties, setIsLoadingProperties] = useState(false);
