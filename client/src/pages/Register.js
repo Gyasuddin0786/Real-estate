@@ -14,6 +14,8 @@ import { Google, GitHub } from '@mui/icons-material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
+const BASE_API_URL = process.env.REACT_APP_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
+
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -50,11 +52,11 @@ const Register = () => {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/google`;
+    window.location.href = `${BASE_API_URL}/api/auth/google`;
   };
 
   const handleGitHubSignup = () => {
-    window.location.href = `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/github`;
+    window.location.href = `${BASE_API_URL}/api/auth/github`;
   };
 
   return (

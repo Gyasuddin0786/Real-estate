@@ -3,7 +3,7 @@ import { Home, People, AttachMoney, CheckCircle, Pending, Message, Send, Close }
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
 import { bookingAPI, userAPI, adminAPI } from '../utils/api';
-import axios from 'axios';
+import axios from '../utils/api';
 import { io as ioClient } from 'socket.io-client';
 import jsPDF from 'jspdf';
 import * as XLSX from 'xlsx';
@@ -63,6 +63,7 @@ const Dashboard = () => {
   const [recentPropertiesPage, setRecentPropertiesPage] = useState(1);
   const [recentBookingsPage, setRecentBookingsPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const BASE_API_URL = process.env.REACT_APP_API_URL?.replace(/\/api$/, '') || 'http://localhost:5000';
 
   useEffect(() => {
     if (user) {
@@ -77,7 +78,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!user) return;
-    const SERVER = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const SERVER = BASE_API_URL;
     const s = ioClient(SERVER, { transports: ['websocket'] });
     setSocket(s);
 
@@ -140,7 +141,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages`, {
+      const response = await axios.get('/api/messages', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const newMessages = response.data || [];
@@ -193,7 +194,7 @@ const Dashboard = () => {
   const checkTypingStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/typing-status`, {
+      const response = await axios.get('/api/messages/typing-status', {
         headers: { Authorization: `Bearer ${token}` }
       });
       const typingUsers = response.data.filter(t => t.userId !== user._id && t.typing);
@@ -206,7 +207,7 @@ const Dashboard = () => {
   const markAsRead = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/messages/mark-read`, {}, {
+      await axios.put('/api/messages/mark-read', {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error) {
@@ -217,7 +218,7 @@ const Dashboard = () => {
   const sendTypingStatus = async (typing) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/messages/typing`, {
+      await axios.post('/api/messages/typing', {
         typing,
         userId: user._id
       }, {
@@ -261,7 +262,7 @@ const Dashboard = () => {
       const formData = new FormData();
       
       if (editingMessage) {
-        await axios.put(`${process.env.REACT_APP_API_URL}/api/messages/${editingMessage}`, {
+        await axios.put(`/api/messages/${editingMessage}`, {
           content: newMessage
         }, {
           headers: { Authorization: `Bearer ${token}` }
@@ -285,7 +286,7 @@ const Dashboard = () => {
         
         // console.log('[CLIENT-SEND]', { bookingId: bid, replyTo, selectedBooking, contentLength: newMessage.length, hasFile: !!selectedFile });
         
-        await axios.post(`${process.env.REACT_APP_API_URL}/api/messages`, formData, {
+        await axios.post('/api/messages', formData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -313,7 +314,7 @@ const Dashboard = () => {
     if (!window.confirm('Delete this message?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/messages/${messageId}`, {
+      await axios.delete(`/api/messages/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchMessages();
@@ -331,7 +332,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/booking/${bookingId}`, {
+      const response = await axios.get(`/api/messages/booking/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookingMessages(prev => ({ ...prev, [bookingId]: response.data || [] }));
@@ -425,7 +426,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/refund/initiate`, {}, {
+      const response = await axios.put(`/api/bookings/${bookingId}/refund/initiate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -460,7 +461,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/refund/complete`, {}, {
+      const response = await axios.put(`/api/bookings/${bookingId}/refund/complete`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -1470,18 +1471,23 @@ const Dashboard = () => {
                         
                         {msg?.fileUrl ? (
                           <div className="mt-2">
-                            {msg?.fileUrl?.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                              <img 
-                                src={`http://localhost:5000${msg?.fileUrl}`} 
-                                alt="Shared image" 
-                                className="max-w-full h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
-                                onClick={() => window.open(`http://localhost:5000${msg?.fileUrl}`, '_blank')}
-                              />
-                            ) : (
-                              <a href={`http://localhost:5000${msg?.fileUrl}`} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline hover:text-blue-400">
-                                📎 {msg?.fileName || 'File'}
-                              </a>
-                            )}
+                            {(() => {
+                              const resolvedUrl = msg?.fileUrl?.startsWith('http')
+                                ? msg.fileUrl
+                                : `${BASE_API_URL}${msg?.fileUrl}`;
+                              return msg?.fileUrl?.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                                <img 
+                                  src={resolvedUrl} 
+                                  alt="Shared image" 
+                                  className="max-w-full h-32 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" 
+                                  onClick={() => window.open(resolvedUrl, '_blank')}
+                                />
+                              ) : (
+                                <a href={resolvedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-300 underline hover:text-blue-400">
+                                  📎 {msg?.fileName || 'File'}
+                                </a>
+                              );
+                            })()}
                           </div>
                         ) : null}
                         {msg?.content && <p className="text-sm">{msg?.content}</p>}
