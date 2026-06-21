@@ -46,12 +46,15 @@ const ChatBotSimple = () => {
 
   const [allProperties, setAllProperties] = useState([]);
   const [isLoadingProperties, setIsLoadingProperties] = useState(false);
+  const BOT_API_BASE_URL = process.env.REACT_APP_API_URL
+    ? process.env.REACT_APP_API_URL.replace(/\/api\/?$/, '')
+    : 'http://localhost:5000';
 
   // Fetch real properties from database
   const fetchProperties = async () => {
     try {
       setIsLoadingProperties(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/properties`);
+      const response = await fetch(`${BOT_API_BASE_URL}/api/properties`);
       if (!response.ok) throw new Error('API error');
       const data = await response.json();
       setAllProperties(data.properties || []);

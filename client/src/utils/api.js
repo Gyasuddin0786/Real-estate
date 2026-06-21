@@ -1,18 +1,27 @@
 import axios from 'axios';
 
+const normalizeApiBaseUrl = (url) => url.replace(/\/api\/?$/, '');
 const API_BASE_URL = process.env.REACT_APP_API_URL
-  ? process.env.REACT_APP_API_URL.replace(/\/api$/, '')
+  ? normalizeApiBaseUrl(process.env.REACT_APP_API_URL)
   : 'http://localhost:5000';
 
 axios.defaults.baseURL = API_BASE_URL;
 
-// Add auth token to requests
+// Add auth token to requests and normalize duplicate /api paths
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+
+    if (config.baseURL && config.url) {
+      const normalizedBase = normalizeApiBaseUrl(config.baseURL);
+      if (normalizedBase.endsWith('/api') && config.url.startsWith('/api')) {
+        config.url = config.url.replace(/^\/api/, '');
+      }
+    }
+
     return config;
   },
   (error) => {
