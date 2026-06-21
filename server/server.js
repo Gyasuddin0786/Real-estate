@@ -83,6 +83,10 @@ io.on('connection', (socket) => {
   });
 });
 
+// Test route
+app.get('/', (req, res) => {
+  res.send('Server  is running 🚀');
+});
 http.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });
