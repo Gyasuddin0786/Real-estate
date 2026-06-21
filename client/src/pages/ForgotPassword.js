@@ -15,6 +15,10 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const BASE_API_URL = process.env.REACT_APP_API_URL
+  ? process.env.REACT_APP_API_URL.replace(/\/api\/?$/, '')
+  : 'http://localhost:5000';
+
 const ForgotPassword = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [email, setEmail] = useState("");
@@ -36,7 +40,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/auth/forgot-password`,
+        `${BASE_API_URL}/api/auth/forgot-password`,
         { email },
       );
       setSuccess(response.data.message);
@@ -56,7 +60,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/auth/verify-reset-code`,
+        `${BASE_API_URL}/api/auth/verify-reset-code`,
         { email, code },
       );
       setSuccess(response.data.message);
@@ -87,7 +91,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/auth/reset-password`,
+        `${BASE_API_URL}/api/auth/reset-password`,
         {
           email,
           code,

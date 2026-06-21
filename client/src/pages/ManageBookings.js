@@ -3,6 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { Download, Close } from '@mui/icons-material';
 import jsPDF from 'jspdf';
 
+const BASE_API_URL = process.env.REACT_APP_API_URL
+  ? process.env.REACT_APP_API_URL.replace(/\/api\/?$/, '')
+  : 'http://localhost:5000';
+
 const ManageBookings = () => {
   const { user, loading: authLoading } = useAuth();
   const [bookings, setBookings] = useState([]);
@@ -23,7 +27,7 @@ const ManageBookings = () => {
     }
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/my-bookings`, {
+      const response = await fetch(`${BASE_API_URL}/api/bookings/my-bookings`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -47,7 +51,7 @@ const ManageBookings = () => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
     
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/cancel`, {
+      const response = await fetch(`${BASE_API_URL}/api/bookings/${bookingId}/cancel`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

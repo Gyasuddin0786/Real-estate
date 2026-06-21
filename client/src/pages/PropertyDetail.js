@@ -14,6 +14,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+const BASE_API_URL = process.env.REACT_APP_API_URL
+  ? process.env.REACT_APP_API_URL.replace(/\/api\/?$/, '')
+  : 'http://localhost:5000';
+
 const PropertyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -108,7 +112,7 @@ const PropertyDetail = () => {
     try {
       const bookingAmount = totalAmount; // Total amount based on months
       
-      const orderResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/payment/create-order`, {
+      const orderResponse = await fetch(`${BASE_API_URL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
