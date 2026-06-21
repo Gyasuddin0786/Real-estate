@@ -36,7 +36,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/forgot-password",
+        `${process.env.REACT_APP_API_URL}/api/auth/forgot-password`,
         { email },
       );
       setSuccess(response.data.message);
@@ -56,7 +56,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/verify-reset-code",
+        `${process.env.REACT_APP_API_URL}/api/auth/verify-reset-code`,
         { email, code },
       );
       setSuccess(response.data.message);
@@ -87,7 +87,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/reset-password",
+        `${process.env.REACT_APP_API_URL}/api/auth/reset-password`,
         {
           email,
           code,

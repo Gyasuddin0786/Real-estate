@@ -301,7 +301,7 @@ const Home = () => {
                         property.images?.[0] 
                           ? (property.images[0].startsWith('http') 
                               ? property.images[0] 
-                              : `http://localhost:5000${property.images[0]}`)
+                              : `${process.env.REACT_APP_API_URL}${property.images[0]}`)
                           : 'https://via.placeholder.com/400x300?text=No+Image'
                       }
                       alt={property.title}

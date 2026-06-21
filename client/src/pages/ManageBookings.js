@@ -23,7 +23,7 @@ const ManageBookings = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:5000/api/bookings/my-bookings', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/my-bookings`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -47,7 +47,7 @@ const ManageBookings = () => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/cancel`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/cancel`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`

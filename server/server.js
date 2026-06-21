@@ -45,10 +45,10 @@ app.use('/api/payment', paymentRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Test route
 app.get('/', (req, res) => {
-  res.json({ message: 'Real Estate API Server' });
+  res.send('Server  is running... 🚀');
 });
-
 const PORT = process.env.PORT || 5000;
 const http = require('http').createServer(app);
 const { Server } = require('socket.io');
@@ -83,10 +83,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Test route
-app.get('/', (req, res) => {
-  res.send('Server  is running 🚀');
-});
 http.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });

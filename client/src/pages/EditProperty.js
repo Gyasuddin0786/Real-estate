@@ -441,7 +441,7 @@ const EditProperty = () => {
                     {existingImages.map((image, index) => (
                       <div key={index} className="relative">
                         <img
-                          src={image.startsWith('http') ? image : `http://localhost:5000${image}`}
+                          src={image.startsWith('http') ? image : `${process.env.REACT_APP_API_URL}${image}`}
                           alt={`Property ${index + 1}`}
                           className="w-full h-24 object-cover rounded-md"
                           onError={(e) => {

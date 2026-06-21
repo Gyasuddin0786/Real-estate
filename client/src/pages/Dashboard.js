@@ -140,7 +140,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const response = await axios.get('http://localhost:5000/api/messages', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const newMessages = response.data || [];
@@ -193,7 +193,7 @@ const Dashboard = () => {
   const checkTypingStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/messages/typing-status', {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/typing-status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const typingUsers = response.data.filter(t => t.userId !== user._id && t.typing);
@@ -206,7 +206,7 @@ const Dashboard = () => {
   const markAsRead = async () => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put('http://localhost:5000/api/messages/mark-read', {}, {
+      await axios.put(`${process.env.REACT_APP_API_URL}/api/messages/mark-read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
     } catch (error) {
@@ -217,7 +217,7 @@ const Dashboard = () => {
   const sendTypingStatus = async (typing) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/messages/typing', {
+      await axios.post(`${process.env.REACT_APP_API_URL}/api/messages/typing`, {
         typing,
         userId: user._id
       }, {
@@ -261,7 +261,7 @@ const Dashboard = () => {
       const formData = new FormData();
       
       if (editingMessage) {
-        await axios.put(`http://localhost:5000/api/messages/${editingMessage}`, {
+        await axios.put(`${process.env.REACT_APP_API_URL}/api/messages/${editingMessage}`, {
           content: newMessage
         }, {
           headers: { Authorization: `Bearer ${token}` }
@@ -285,7 +285,7 @@ const Dashboard = () => {
         
         // console.log('[CLIENT-SEND]', { bookingId: bid, replyTo, selectedBooking, contentLength: newMessage.length, hasFile: !!selectedFile });
         
-        await axios.post('http://localhost:5000/api/messages', formData, {
+        await axios.post(`${process.env.REACT_APP_API_URL}/api/messages`, formData, {
           headers: { 
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data'
@@ -313,7 +313,7 @@ const Dashboard = () => {
     if (!window.confirm('Delete this message?')) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/messages/${messageId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/messages/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchMessages();
@@ -331,7 +331,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const response = await axios.get(`http://localhost:5000/api/messages/booking/${bookingId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/messages/booking/${bookingId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookingMessages(prev => ({ ...prev, [bookingId]: response.data || [] }));
@@ -425,7 +425,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.put(`http://localhost:5000/api/bookings/${bookingId}/refund/initiate`, {}, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/refund/initiate`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -460,7 +460,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem('token');
       
-      const response = await axios.put(`http://localhost:5000/api/bookings/${bookingId}/refund/complete`, {}, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/api/bookings/${bookingId}/refund/complete`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

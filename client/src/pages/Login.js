@@ -66,11 +66,11 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`;
   };
 
   const handleGitHubLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/github";
+    window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/github`;
   };
 
   return (

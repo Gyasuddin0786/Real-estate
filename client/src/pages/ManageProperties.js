@@ -126,7 +126,7 @@ const ManageProperties = () => {
                         <div className="w-16 h-16 rounded-lg overflow-hidden">
                           {property.images && property.images.length > 0 ? (
                             <img
-                              src={property.images[0].startsWith('http') ? property.images[0] : `http://localhost:5000${property.images[0]}`}
+                              src={property.images[0].startsWith('http') ? property.images[0] : `${process.env.REACT_APP_API_URL}${property.images[0]}`}
                               alt={property.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {

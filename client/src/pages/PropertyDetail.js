@@ -108,7 +108,7 @@ const PropertyDetail = () => {
     try {
       const bookingAmount = totalAmount; // Total amount based on months
       
-      const orderResponse = await fetch('http://localhost:5000/api/payment/create-order', {
+      const orderResponse = await fetch(`${process.env.REACT_APP_API_URL}/api/payment/create-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -277,7 +277,7 @@ const PropertyDetail = () => {
                     property.images?.[currentImageIndex] 
                       ? (property.images[currentImageIndex].startsWith('http') 
                           ? property.images[currentImageIndex] 
-                          : `http://localhost:5000${property.images[currentImageIndex]}`)
+                          : `${process.env.REACT_APP_API_URL}${property.images[currentImageIndex]}`)
                       : 'https://via.placeholder.com/800x400?text=No+Image'
                   }
                   alt={property.title}
@@ -330,7 +330,7 @@ const PropertyDetail = () => {
                         src={
                           image.startsWith('http') 
                             ? image 
-                            : `http://localhost:5000${image}`
+                            : `${process.env.REACT_APP_API_URL}${image}`
                         }
                         alt={`${property.title} ${index + 1}`}
                         className="w-full h-full object-cover"
