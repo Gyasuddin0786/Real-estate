@@ -76,11 +76,14 @@ const Home = () => {
   const fetchFeaturedProperties = async () => {
     try {
       const response = await propertyAPI.getFeatured();
-      setFeaturedProperties(response.data);
+      const featured = Array.isArray(response.data)
+        ? response.data
+        : response.data?.properties || [];
+      setFeaturedProperties(featured);
     } catch (error) {
       try {
         const fallbackResponse = await propertyAPI.getAll({ limit: 8 });
-        setFeaturedProperties(fallbackResponse.data.properties || []);
+        setFeaturedProperties(fallbackResponse.data?.properties || []);
       } catch (fallbackError) {
         setFeaturedProperties([]);
       }
