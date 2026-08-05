@@ -72,47 +72,47 @@ const Register = () => {
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
         <Box sx={{ mb: 3 }}>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<Google />}
-            onClick={handleGoogleSignup}
-            disabled={loading}
-            sx={{ 
-              mb: 1, 
-              py: 1.5,
-              bgcolor: '#4285f4',
-              color: 'white',
-              '&:hover': {
-                bgcolor: '#3367d6'
-              },
-              '&:disabled': {
-                bgcolor: '#cccccc'
-              }
-            }}
-          >
-            {loading ? 'Signing up...' : 'Sign up with Google'}
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            startIcon={<GitHub />}
-            onClick={handleGitHubSignup}
-            disabled={loading}
-            sx={{ 
-              py: 1.5,
-              bgcolor: '#333333',
-              color: 'white',
-              '&:hover': {
-                bgcolor: '#24292e'
-              },
-              '&:disabled': {
-                bgcolor: '#cccccc'
-              }
-            }}
-          >
-            {loading ? 'Signing up...' : 'Sign up with GitHub'}
-          </Button>
+          // <Button
+          //   fullWidth
+          //   variant="contained"
+          //   startIcon={<Google />}
+          //   onClick={handleGoogleSignup}
+          //   disabled={loading}
+          //   sx={{ 
+          //     mb: 1, 
+          //     py: 1.5,
+          //     bgcolor: '#4285f4',
+          //     color: 'white',
+          //     '&:hover': {
+          //       bgcolor: '#3367d6'
+          //     },
+          //     '&:disabled': {
+          //       bgcolor: '#cccccc'
+          //     }
+          //   }}
+          // >
+          //   {loading ? 'Signing up...' : 'Sign up with Google'}
+          // </Button>
+          // <Button
+          //   fullWidth
+          //   variant="contained"
+          //   startIcon={<GitHub />}
+          //   onClick={handleGitHubSignup}
+          //   disabled={loading}
+          //   sx={{ 
+          //     py: 1.5,
+          //     bgcolor: '#333333',
+          //     color: 'white',
+          //     '&:hover': {
+          //       bgcolor: '#24292e'
+          //     },
+          //     '&:disabled': {
+          //       bgcolor: '#cccccc'
+          //     }
+          //   }}
+          // >
+          //   {loading ? 'Signing up...' : 'Sign up with GitHub'}
+          // </Button>
         </Box>
 
         <Divider sx={{ mb: 3 }}>
